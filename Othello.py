@@ -16,19 +16,25 @@ class Othello:
         for i in range(len(self.Board)):
             print(self.Board[i])
 
+    def counter(self):
+        c = [0, 0] # index 0 for User, index 1 for AI
+        for i in range(len(self.Board)):
+            for j in range(len(self.Board[i])):
+                if self.Board[i][j] != 'X':
+                    c[0] += 1
+                elif self.Board[i][j] != 'O':
+                    c[1] += 1
+        return c
+
     def checkCompleted(self):
         for i in range(len(self.Board)):
             for j in range(len(self.Board[i])):
                 if self.Board[i][j] != ' ':
                     return -1
-        user = 0
-        comp = 0
-        for i in range(len(self.Board)):
-            for j in range(len(self.Board[i])):
-                if self.Board[i][j] != 'X':
-                    user = user + 1
-                elif self.Board[i][j] != 'O':
-                    comp = comp + 1
+
+        count = self.counter()
+        user = count[0]
+        comp = count[1]
         if comp > user:
             return 2
         elif comp == user:
@@ -59,9 +65,6 @@ class Othello:
                 if var and va2 and self.Board[i][j] == " ":
                     row.append(i)
                     col.append(j)
-                    var = False
-                    va2 = False
-                    continue
                 var = False
                 va2 = False
 
@@ -79,9 +82,6 @@ class Othello:
                 if var and va2 and self.Board[i][j] == " ":
                     row.append(i)
                     col.append(j)
-                    var = False
-                    va2 = False
-                    continue
                 var = False
                 va2 = False
 
@@ -99,9 +99,6 @@ class Othello:
                 if var and va2 and self.Board[i][j] == " ":
                     row.append(i)
                     col.append(j)
-                    var = False
-                    va2 = False
-                    continue
                 var = False
                 va2 = False
 
@@ -119,9 +116,6 @@ class Othello:
                 if var and va2 and self.Board[i][j] == " ":
                     row.append(i)
                     col.append(j)
-                    var = False
-                    va2 = False
-                    continue
                 var = False
                 va2 = False
 
@@ -141,10 +135,12 @@ class Othello:
                 if var and va2 and self.Board[j][j + i] == " ":
                     row.append(j)
                     col.append(j + i)
-                    var = False
-                    va2 = False
-                    continue
                 var = False
                 va2 = False
 
         print(row, col)
+
+    def EvaluationFunction(self):
+        count = self.counter()
+        return count[1] - count[0]  # return computer's score - user's score
+
