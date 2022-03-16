@@ -1,8 +1,9 @@
 import Othello
 import copy
 
-best_move = dict()
 
+# global best_move
+# best_move = dict()
 
 def MinMax(board, depth, maximize):
     if depth == 0:
@@ -13,11 +14,11 @@ def MinMax(board, depth, maximize):
         moves = board.ValidMoves()
         for move in moves:
             temp = copy.deepcopy(board)
-            temp.TakeMove(move)
+            temp.TakeTurn(move)
             v = MinMax(temp, depth - 1, not maximize)
             if v > best_value:
                 best_value = v
-                global best_move
+                # global best_move
                 best_move = move
         return best_value
 
@@ -30,11 +31,15 @@ def MinMax(board, depth, maximize):
             v = MinMax(temp, depth - 1, not maximize)
             if v < best_value:
                 best_value = v
-                global best_move
+                # global best_move
                 best_move = move
         return best_value
 
 
 p = Othello.Othello()
 p.Print()
-p.Move()
+print(p.ValidMoves("X"))
+x = int(input("X:"))
+y = int(input("Y:"))
+p.TakeTurn(x, y, "X")
+p.Print()

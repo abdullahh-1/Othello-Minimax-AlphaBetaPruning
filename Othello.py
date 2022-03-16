@@ -1,6 +1,11 @@
+def isValid(i, j):
+    if i < 0 or i > 8 or j > 8 or j < 0:
+        return False
+    return True
+
+
 class Othello:
     Board = [[], [], [], [], [], [], [], []]
-    Turn = ""
 
     def __init__(self):
         self.Board = [[" ", " ", " ", " ", " ", " ", " ", " "],
@@ -17,7 +22,7 @@ class Othello:
             print(self.Board[i])
 
     def counter(self):
-        c = [0, 0] # index 0 for User, index 1 for AI
+        c = [0, 0]  # index 0 for User, index 1 for AI
         for i in range(len(self.Board)):
             for j in range(len(self.Board[i])):
                 if self.Board[i][j] != 'X':
@@ -42,29 +47,30 @@ class Othello:
         elif comp < user:
             return 1
 
-    def isValid(self, i, j):
-        if i < 0 or i >= len(self.Board) or j >= len(self.Board) or j < 0:
-            return False
-        return True
-
-    def Move(self):
-        row = []
-        col = []
+    def ValidMoves(self, turn):  # returns list as x1, y1, x2, y2
+        pair = []
+        if turn == 'X':
+            opp = 'O'
+        else:
+            opp = 'X'
 
         # check Vertically
         for j in range(len(self.Board[0])):
             var = False
             va2 = False
             for i in range(len(self.Board)):
-                if self.Board[i][j] == "O":
+                if self.Board[i][j] == turn:
                     var = True
+                    var2 = False
                     continue
-                if var and self.Board[i][j] == "X":
+
+                if var and self.Board[i][j] == opp:
                     va2 = True
                     continue
+
                 if var and va2 and self.Board[i][j] == " ":
-                    row.append(i)
-                    col.append(j)
+                    pair.append(i)
+                    pair.append(j)
                 var = False
                 va2 = False
 
@@ -73,15 +79,16 @@ class Othello:
             var = False
             va2 = False
             for i in range(len(self.Board) - 1, 0, -1):
-                if self.Board[i][j] == "O":
+                if self.Board[i][j] == turn:
                     var = True
+                    var2 = False
                     continue
-                if var and self.Board[i][j] == "X":
+                if var and self.Board[i][j] == opp:
                     va2 = True
                     continue
                 if var and va2 and self.Board[i][j] == " ":
-                    row.append(i)
-                    col.append(j)
+                    pair.append(i)
+                    pair.append(j)
                 var = False
                 va2 = False
 
@@ -90,15 +97,16 @@ class Othello:
             var = False
             va2 = False
             for j in range(len(self.Board[0])):
-                if self.Board[i][j] == "O":
+                if self.Board[i][j] == turn:
                     var = True
+                    var2 = False
                     continue
-                if var and self.Board[i][j] == "X":
+                if var and self.Board[i][j] == opp:
                     va2 = True
                     continue
                 if var and va2 and self.Board[i][j] == " ":
-                    row.append(i)
-                    col.append(j)
+                    pair.append(i)
+                    pair.append(j)
                 var = False
                 va2 = False
 
@@ -107,40 +115,247 @@ class Othello:
             var = False
             va2 = False
             for j in range(len(self.Board[0]) - 1, 0, -1):
-                if self.Board[i][j] == "O":
+                if self.Board[i][j] == turn:
                     var = True
+                    var2 = False
                     continue
-                if var and self.Board[i][j] == "X":
+                if var and self.Board[i][j] == opp:
                     va2 = True
                     continue
                 if var and va2 and self.Board[i][j] == " ":
-                    row.append(i)
-                    col.append(j)
+                    pair.append(i)
+                    pair.append(j)
                 var = False
                 va2 = False
 
         # Diagonals
-        for i in range(8):
+        for i in range(8):  # left top to right bottom (upper half)
             var = False
             va2 = False
             for j in range(8):
-                if j + i >= 7:
+                if (j + i) > 7:
                     break
-                if self.Board[j][j + i] == "O":
+                if self.Board[j][j + i] == turn:
                     var = True
+                    var2 = False
                     continue
-                if var and self.Board[j][j + i] == "X":
+                if var and self.Board[j][j + i] == opp:
                     va2 = True
                     continue
                 if var and va2 and self.Board[j][j + i] == " ":
-                    row.append(j)
-                    col.append(j + i)
+                    pair.append(j)
+                    pair.append(j + i)
                 var = False
                 va2 = False
 
-        print(row, col)
+        for i in range(1, 8):  # left top to right bottom (bottom half)
+            var = False
+            va2 = False
+            for j in range(8):
+                if (j + i) > 7:
+                    break
+                if self.Board[j + i][j] == turn:
+                    var = True
+                    var2 = False
+                    continue
+                if var and self.Board[j + i][j] == opp:
+                    va2 = True
+                    continue
+                if var and va2 and self.Board[j + i][j] == " ":
+                    pair.append(j + i)
+                    pair.append(j)
+                var = False
+                va2 = False
+
+        for i in range(0, 8):
+            var = False
+            va2 = False
+            for j in range(7, -1, -1):
+                if (j - i) < 0:
+                    break
+                if self.Board[j - i][j] == turn:
+                    var = True
+                    var2 = False
+                    continue
+                if var and self.Board[j - i][j] == opp:
+                    va2 = True
+                    continue
+                if var and va2 and self.Board[j - i][j] == " ":
+                    pair.append(j - i)
+                    pair.append(j)
+                var = False
+                va2 = False
+
+        for i in range(1, 8):
+            var = False
+            va2 = False
+            for j in range(7, -1, -1):
+                if (j - i) < 0:
+                    break
+                if self.Board[j][j - i] == turn:
+                    var = True
+                    var2 = False
+                    continue
+                if var and self.Board[j][j - i] == opp:
+                    va2 = True
+                    continue
+                if var and va2 and self.Board[j][j - i] == " ":
+                    pair.append(j)
+                    pair.append(j - i)
+                var = False
+                va2 = False
+
+        for i in range(8):  # right top to left bottom - upper half
+            var = False
+            va2 = False
+            for j in range(8):
+                if (7 - j - i) < 0:
+                    break
+                if self.Board[j][7 - j - i] == turn:
+                    var = True
+                    var2 = False
+                    continue
+                if var and self.Board[j][7 - j - i] == opp:
+                    va2 = True
+                    continue
+                if var and va2 and self.Board[j][7 - j - i] == " ":
+                    pair.append(j)
+                    pair.append(7 - j - i)
+                var = False
+                va2 = False
+
+        for i in range(1, 8):  # right top to left bottom - bottom half
+            var = False
+            va2 = False
+            for j in range(8):
+                if (j + i) < 8:
+                    break
+                if self.Board[j + i][7 - j] == turn:
+                    var = True
+                    var2 = False
+                    continue
+                if var and self.Board[j + i][7 - j] == opp:
+                    va2 = True
+                    continue
+                if var and va2 and self.Board[j + i][7 - j] == " ":
+                    pair.append(j + i)
+                    pair.append(7 - j)
+                var = False
+                va2 = False
+
+        for i in range(8):  # left bottom to right top- upper half
+            var = False
+            va2 = False
+            for j in range(8):
+                if (7 - j - i) < 0:
+                    break
+                if self.Board[7 - j - i][j] == turn:
+                    var = True
+                    var2 = False
+                    continue
+                if var and self.Board[7 - j - i][j] == opp:
+                    va2 = True
+                    continue
+                if var and va2 and self.Board[7 - j - i][j] == " ":
+                    pair.append(j)
+                    pair.append(7 - j - i)
+                var = False
+                va2 = False
+
+        for i in range(1, 8):  # left bottom to right top - bottom half
+            var = False
+            va2 = False
+            for j in range(8):
+                if (j + i) < 8:
+                    break
+                if self.Board[7 - j][j + i] == turn:
+                    var = True
+                    var2 = False
+                    continue
+                if var and self.Board[7 - j][j + i] == opp:
+                    va2 = True
+                    continue
+                if var and va2 and self.Board[7 - j][j + i] == " ":
+                    pair.append(j + i)
+                    pair.append(7 - j)
+                var = False
+                va2 = False
+
+        return pair
+
+    def TakeTurn(self, row, col, turn):
+        self.Board[row][col] = turn
+
+        for i in range(row + 1, 8):  # down
+            if self.Board[i][col] == ' ':
+                break
+            if self.Board[i][col] == turn:
+                for j in range(i - 1, row, -1):
+                    self.Board[j][col] = turn
+                break
+
+        for i in range(row - 1, 0, -1):  # up
+            if self.Board[i][col] == ' ':
+                break
+            if self.Board[i][col] == turn:
+                for j in range(i + 1, row, 1):
+                    self.Board[j][col] = turn
+                break
+
+        for i in range(col + 1, 8):  # right
+            if self.Board[row][i] == ' ':
+                break
+            if self.Board[row][i] == turn:
+                for j in range(i - 1, col, -1):
+                    self.Board[row][j] = turn
+                break
+
+        for i in range(col - 1, 0, -1):  # left
+            if self.Board[row][i] == ' ':
+                break
+            if self.Board[row][i] == turn:
+                for j in range(i + 1, col, 1):
+                    self.Board[row][i] = turn
+                break
+
+        for i in range(1, 8):  # diagonal
+            if (row + i) > 7 or (col + i) > 7:
+                break
+            if self.Board[row + i][col + i] == ' ':
+                break
+            if self.Board[row + i][col + i] == turn:
+                for j in range(i, 0, -1):
+                    self.Board[row + j][col + j] = turn
+                break
+
+        for i in range(1, 8):  # r_diagonal
+            if (row - i) < 0 or (col - i) < 0:
+                break
+            if self.Board[row - i][col - i] == ' ':
+                break
+            if self.Board[row - i][col - i] == turn:
+                for j in range(i, 0, -1):
+                    self.Board[row - j][col - j] = turn
+                break
+
+        for i in range(1, 8):  # bl to t_r
+            if (row - i) < 0 or (col + i) > 7:
+                break
+            if self.Board[row - i][col + i] == ' ':
+                break
+            if self.Board[row - i][col + i] == turn:
+                for j in range(i, 0, -1):
+                    self.Board[row - i][col + i] = turn
+
+        for i in range(1, 8):  # br to tl
+            if (row + i) > 7 or (col - i) < 0:
+                break
+            if self.Board[row + i][col - i] == ' ':
+                break
+            if self.Board[row + i][col - i] == turn:
+                for j in range(i, 0, -1):
+                    self.Board[row + i][col - i] = turn
 
     def EvaluationFunction(self):
         count = self.counter()
         return count[1] - count[0]  # return computer's score - user's score
-
