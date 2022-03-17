@@ -1,7 +1,17 @@
+class Pair:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def set(self, x, y):
+        self.x = x
+        self.y = y
+
+
 def isValid(i, j):
-    if i < 0 or i > 8 or j > 8 or j < 0:
-        return False
-    return True
+    if 0 <= i < 8 and 0 <= j < 8:
+        return True
+    return False
 
 
 class Othello:
@@ -10,7 +20,7 @@ class Othello:
     def __init__(self):
         self.Board = [[" ", " ", " ", " ", " ", " ", " ", " "],
                       [" ", " ", " ", " ", " ", " ", " ", " "],
-                      [" ", " ", "O", " ", " ", " ", " ", " "],
+                      [" ", " ", " ", " ", " ", " ", " ", " "],
                       [" ", " ", " ", "X", "O", " ", " ", " "],
                       [" ", " ", " ", "O", "X", " ", " ", " "],
                       [" ", " ", " ", " ", " ", " ", " ", " "],
@@ -18,23 +28,35 @@ class Othello:
                       [" ", " ", " ", " ", " ", " ", " ", " "]]
 
     def Print(self):
-        for i in range(len(self.Board)):
-            print(self.Board[i])
+        u_score = 0
+        c_score = 0
+        print("-------------------------------------------------")
+        for i in range(8):
+            print("|", end="  ")
+            for j in range(8):
+                print(self.Board[i][j], end="  |  ")
+                if self.Board[i][j] == 'O':
+                    u_score += 1
+                if self.Board[i][j] == 'X':
+                    c_score += 1
+            print("\n-------------------------------------------------")
+        print("User's Score = ", u_score)
+        print("Computer's Score = ", c_score)
 
     def counter(self):
         c = [0, 0]  # index 0 for User, index 1 for AI
-        for i in range(len(self.Board)):
-            for j in range(len(self.Board[i])):
-                if self.Board[i][j] != 'X':
+        for i in range(8):
+            for j in range(8):
+                if self.Board[i][j] == 'O':
                     c[0] += 1
-                elif self.Board[i][j] != 'O':
+                elif self.Board[i][j] == 'X':
                     c[1] += 1
         return c
 
     def checkCompleted(self):
         for i in range(len(self.Board)):
             for j in range(len(self.Board[i])):
-                if self.Board[i][j] != ' ':
+                if self.Board[i][j] == ' ':
                     return -1
 
         count = self.counter()
@@ -257,8 +279,8 @@ class Othello:
                     va2 = True
                     continue
                 if var and va2 and self.Board[7 - j - i][j] == " ":
-                    pair.append(j)
                     pair.append(7 - j - i)
+                    pair.append(j)
                 var = False
                 va2 = False
 
@@ -276,14 +298,22 @@ class Othello:
                     va2 = True
                     continue
                 if var and va2 and self.Board[7 - j][j + i] == " ":
-                    pair.append(j + i)
                     pair.append(7 - j)
+                    pair.append(j + i)
                 var = False
                 va2 = False
 
         return pair
 
     def TakeTurn(self, row, col, turn):
+        valid = False
+        moves = self.ValidMoves(turn)
+        for i in range(0, len(moves), 2):
+            if row == moves[i] and col == moves[i+1]:
+                valid = True
+        if not valid:
+            return False
+
         self.Board[row][col] = turn
 
         for i in range(row + 1, 8):  # down
@@ -315,7 +345,7 @@ class Othello:
                 break
             if self.Board[row][i] == turn:
                 for j in range(i + 1, col, 1):
-                    self.Board[row][i] = turn
+                    self.Board[row][j] = turn
                 break
 
         for i in range(1, 8):  # diagonal
@@ -345,7 +375,7 @@ class Othello:
                 break
             if self.Board[row - i][col + i] == turn:
                 for j in range(i, 0, -1):
-                    self.Board[row - i][col + i] = turn
+                    self.Board[row - j][col + j] = turn
 
         for i in range(1, 8):  # br to tl
             if (row + i) > 7 or (col - i) < 0:
@@ -354,8 +384,15 @@ class Othello:
                 break
             if self.Board[row + i][col - i] == turn:
                 for j in range(i, 0, -1):
-                    self.Board[row + i][col - i] = turn
+                    self.Board[row + j][col - j] = turn
+
+        return True
 
     def EvaluationFunction(self):
         count = self.counter()
-        return count[1] - count[0]  # return computer's score - user's score
+        re = self.checkCompleted()
+        if re == 1:
+            return -9999  # if user is winning
+        if re == 2:
+            return 9999   # if user is losing
+        return 10 * (count[1] - count[0])  # computer's score - user's score
